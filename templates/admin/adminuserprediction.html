@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Prediction Stats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px 0;
+    }
+
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      color: white;
+      text-align: center;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      padding: 25px;
+    }
+
+    canvas {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea, #764ba2); box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#" style="font-size: 1.5rem;">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav gap-3">
+            <li class="nav-item">
+              <a class="nav-link text-white fw-semibold" href="{% url 'adminhome' %}">
+                <i class="fas fa-users me-1"></i> Registered Users
+              </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white fw-semibold" href="{% url 'adminuserratio' %}">
+                  <i class="fas fa-users me-1"></i> Graph
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white fw-semibold" href="{% url 'admin_accuracy' %}">
+                  <i class="fas fa-users me-1"></i> Accuracy
+                </a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link text-white fw-semibold" href="{% url 'user_logout' %}">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+  </nav>
+
+  <section class="section py-5">
+    <div class="container" data-aos="fade-up">
+      <div class="row g-4">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h3>User Prediction Ratio</h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <canvas id="pieChart"></canvas>
+                </div>
+                <div class="col-md-4">
+                  <canvas id="barChart"></canvas>
+                </div>
+                <div class="col-md-4">
+                  <canvas id="lineChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init();
+
+    const chartData = JSON.parse(`{{ chart_data|escapejs }}`);
+
+    const configCommon = {
+      labels: chartData.labels,
+      datasets: [{
+        label: 'Predictions',
+        data: chartData.values,
+        backgroundColor: ['#2ecc71', '#e74c3c'],
+        borderColor: '#34495e',
+        borderWidth: 1
+      }]
+    };
+
+    new Chart(document.getElementById('pieChart'), {
+      type: 'pie',
+      data: configCommon
+    });
+
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: configCommon,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: configCommon,
+      options: {
+        responsive: true,
+        tension: 0.4
+      }
+    });
+  </script>
+
+</body>
+</html>
